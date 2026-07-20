@@ -1,0 +1,197 @@
+/* =============================================
+   HOME.CSS — Página de inicio | Pollo El Solar
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&family=Inter:wght@400;600;700;800&display=swap');
+
+/* ── Gotham Narrow Bold (local) — tipografía principal del home ── */
+@font-face {
+    font-family: 'Gotham';
+    src: url('../../tipografia/gothamnarrowoffice_bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --primary:   #c62828;
+    --secondary: #ffcc00;
+    --dark:      #1a1a1a;
+    --light:     #ffffff;
+    --font-home: 'Gotham', 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+/* ── Gotham como fuente base de toda la página ── */
+body {
+    font-family: var(--font-home);
+}
+
+/* ── Tipografía global del home (refuerzo por herencia) ── */
+.home-page,
+.home-page h1,
+.home-page h2,
+.home-page h3,
+.home-page p,
+.home-page span,
+.home-page div,
+.home-page a,
+.home-page button {
+    font-family: var(--font-home);
+}
+
+.home-page {
+    background: var(--light);
+    min-height: 100vh;
+}
+
+/* ══════════════════════════════════════
+   1. HERO
+══════════════════════════════════════ */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 85vh;
+    background: #fff url('../combos/fw.png') center/cover no-repeat;
+    overflow: hidden;
+}
+
+/* Video hamburguesa — esquina superior izquierda */
+.home1 {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 500px;
+    height: auto;
+    pointer-events: all;
+    z-index: 2;
+    transition: transform 0.4s ease, filter 0.4s ease;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.15));
+    cursor: default;
+}
+.home1:hover {
+    transform: scale(0.93) translateY(-8px);
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.22));
+}
+
+/* ── cello1: logo decorativo — dentro del hero, se queda atrás al scrollear ── */
+.cello1 {
+    position: absolute;
+    top: 20%;
+    right: 10%;
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+    z-index: 500;
+    cursor: grab;
+}
+.cello1:active { cursor: grabbing; }
+
+/* ── cello2: segundo logo decorativo — dentro del hero, se queda atrás al scrollear ── */
+.cello2 {
+    position: absolute;
+    bottom: 20%;
+    left: 6%;
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+    z-index: 500;
+    cursor: grab;
+}
+.cello2:active { cursor: grabbing; }
+
+/* ══════════════════════════════════════
+   2. FRANJA MARQUEE
+══════════════════════════════════════ */
+.franja {
+    background: var(--dark);
+    color: var(--secondary);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 12px 0;
+}
+
+.franja-track {
+    display: inline-flex;
+    width: max-content;
+    animation: mover-izq 22s linear infinite;
+}
+
+.franja-item {
+    padding: 0 40px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+@keyframes mover-izq {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+/* ══════════════════════════════════════
+   3. CARRUSEL COMBOS
+══════════════════════════════════════ */
+.promo-section {
+    padding: 60px 20px 70px;
+    text-align: center;
+    background: #fff url('../combos/fw.png') center/cover no-repeat;
+}
+
+.promo-titulo {
+    font-family: var(--font-home);
+    font-size: 36px;
+    color: var(--dark);
+    margin-bottom: 36px;
+}
+
+.promo-carrusel-wrapper {
+    overflow: hidden;
+    max-width: 960px;
+    margin: 0 auto;
+    cursor: grab;
+    user-select: none;
+}
+.promo-carrusel-wrapper:active { cursor: grabbing; }
+
+.promo-track {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.6s ease;
+    will-change: transform;
+}
+
+.promo-img {
+    flex-shrink: 0;
+    width: calc((960px - 40px) / 3);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+    cursor: grab;
+}
+.promo-img:hover { transform: translateY(-4px); }
+
+.promo-img img {
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+    .hero { height: 100vh; }
+    .hero-contenido { left: 24px; bottom: 36px; }
+    .hero-contenido h1 { font-size: 34px; }
+
+    .promo-img {
+        width: calc((100vw - 60px) / 2);
+    }
+}

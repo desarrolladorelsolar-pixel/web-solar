@@ -1,0 +1,1098 @@
+/**
+ * menu.css — Estilos de la página de menú | Pollo El Solar Bolivia
+ *
+ * Estructura de la página (todo cabe en 100vh sin scroll vertical):
+ *   navbar (fijo, ~72px)
+ *   ├─ .menu-logo-bar      — slogan tipográfico
+ *   ├─ .categorias-wrapper — barra de categorías + hamburguesa
+ *   ├─ .grid-wrapper       — río de productos (flex:1, desktop)
+ *   ├─ .menu-grid-movil    — grid vertical (móvil)
+ *   └─ footer.php          — franja de información (.footer-bo)
+ *
+ * Fuentes:
+ *   - Gotham Narrow Bold (local) — nombres de productos y precios
+ *   - Irish Grover (Google)      — etiquetas decorativas
+ *   - Inter (Google)             — UI general
+ *   - Boogaloo (Google)          — slogan
+ */
+
+/* ══════════════════════════════════════════════════════════════
+   IMPORTS DE FUENTES
+══════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&family=Inter:wght@400;600;700;800&display=swap');
+
+/* ── Gotham Narrow Bold (local) ── */
+@font-face {
+    font-family: 'Gotham';
+    src: url('../../tipografia/gothamnarrowoffice_bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   VARIABLES
+══════════════════════════════════════════════════════════════ */
+:root {
+    /* ── Colores de marca (existentes) ── */
+    --rojo:                  #c62828;
+    --amarillo:              #ffcc00;
+    --oscuro:                #1a1a1a;
+    --blanco:                #ffffff;
+
+    /* ── Colores neutros (nuevos) ── */
+    --color-icono:           #888;    /* iconos, hamburguesa, botones secundarios */
+    --gris-claro:            #999;    /* precio tachado */
+    --color-texto-secundario:#333;    /* textos y links del footer */
+    --color-borde-suave:     #f0f0f0; /* bordes decorativos y fondos neutros */
+    --color-borde-linea:     #eee;    /* separadores de secciones */
+
+    /* ── Tipografías (existentes) ── */
+    --font-producto:         'Irish Grover', cursive;
+    --font-ui:               'Inter', sans-serif;
+
+    /* ── Tamaños de cards (calculados por JS en escalarCards) ── */
+    --card-gap:              clamp(18px, 2.5vw, 36px);
+    --tira-offset:           clamp(60px, 8vw, 110px);
+
+    /* ── Bordes redondeados (nuevos) ── */
+    --radius-sm:             4px;     /* etiquetas de oferta */
+    --radius-pill:           20px;    /* badge de precio */
+
+    /* ── Transiciones (nuevas) ── */
+    --transition-color:      color 0.2s;
+
+    /* ── Z-index (nuevos) ── */
+    --z-deco:                9998;    /* logos decorativos arrastrables */
+    --z-overlay:             9999;    /* overlay oscuro detrás del panel */
+    --z-panel:               10000;   /* panel flotante de categorías */
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESET BASE
+══════════════════════════════════════════════════════════════ */
+* { box-sizing: border-box; }
+
+/* ── html/body: sin scroll vertical en PC (móvil lo sobreescribe) ── */
+html, body {
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONTENEDOR PRINCIPAL
+══════════════════════════════════════════════════════════════ */
+.menu-page {
+    background: var(--blanco);
+    height: calc(100vh - 72px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LOGOS DECORATIVOS ARRASTRABLES
+══════════════════════════════════════════════════════════════ */
+.logo-deco-drag {
+    position: fixed;
+    opacity: 1;
+    pointer-events: all;
+    cursor: grab;
+    user-select: none;
+    z-index: var(--z-deco);
+    transform: rotate(-15deg);
+    transition: cursor 0.1s;
+}
+.logo-deco-drag:active { cursor: grabbing; }
+
+/* cellomenu1 — posición % del viewport */
+#cellomenu1 {
+    width: clamp(120px, 15vw, 230px);
+    top:   13vh;
+    right: 51vw;
+}
+
+/* cellomenu2 — posición % del viewport */
+#cellomenu2 {
+    width: clamp(90px, 12vw, 180px);
+    top:  87vh;
+    left:  1vw;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SLOGAN — franja debajo del navbar
+══════════════════════════════════════════════════════════════ */
+.menu-logo-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 4px 20px;
+    border-bottom: 1px solid var(--color-borde-suave);
+    flex-shrink: 0;
+    background: var(--blanco);
+    position: relative;
+    overflow: visible;
+    z-index: 10;
+}
+
+.texto {
+    font-family: 'Boogaloo', sans-serif;
+    font-size: clamp(36px, 8.0vh, 100px);
+    line-height: 0.88;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BARRA DE CATEGORÍAS
+══════════════════════════════════════════════════════════════ */
+.categorias-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 4px 24px;
+    border-bottom: 1px solid var(--color-borde-linea);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100;
+}
+
+/* Scroll horizontal de botones, scrollbar oculta */
+.categorias {
+    display: flex;
+    gap: 22px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.categorias::-webkit-scrollbar { display: none; }
+
+.categoria-btn {
+    background: none;
+    border: none;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    color: var(--color-icono);
+    cursor: pointer;
+    padding-bottom: 5px;
+    white-space: nowrap;
+    position: relative;
+    text-transform: uppercase;
+    transition: var(--transition-color);
+}
+
+/* Botón activo: texto rojo + subrayado */
+.categoria-btn.active { color: var(--rojo); }
+.categoria-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--rojo);
+}
+
+/* ── Botón hamburguesa — oculto en PC, visible en tablet/móvil ── */
+.categoria-hamburguesa {
+    display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PANEL FLOTANTE DE CATEGORÍAS
+   Oculto por defecto. Las media queries lo activan en tablet/móvil.
+   Las reglas estructurales del panel se definen aquí una sola vez.
+══════════════════════════════════════════════════════════════ */
+.cat-panel,
+.cat-panel-overlay {
+    display: none;
+}
+
+/* Estructura del panel (compartida por tablet y móvil) */
+.cat-panel {
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 260px;
+    height: 100vh;
+    background: var(--blanco);
+    z-index: var(--z-panel);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    padding: 0;
+}
+.cat-panel.open { left: 0; }
+
+/* Overlay oscuro detrás del panel */
+.cat-panel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: var(--z-overlay);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.cat-panel-overlay.visible { opacity: 1; pointer-events: all; }
+
+/* Encabezado del panel */
+.cat-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 2px solid var(--rojo);
+    font-family: var(--font-ui);
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--oscuro);
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+
+.cat-panel-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--color-icono);
+    line-height: 1;
+    padding: 0;
+}
+
+/* Botones dentro del panel */
+.cat-panel-btn {
+    background: none;
+    border: none;
+    text-align: left;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f5f5f5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.15s, var(--transition-color);
+    width: 100%;
+}
+.cat-panel-btn:hover     { background: #fff8f8; color: var(--rojo); }
+.cat-panel-btn.active    { color: var(--rojo); background: #fff0f0; }
+.cat-panel-btn:last-child { border-bottom: none; }
+.cat-panel-btn .fa-chevron-right { font-size: 10px; color: #ccc; }
+.cat-panel-btn .fa-star          { font-size: 11px; color: var(--amarillo); }
+
+/* ══════════════════════════════════════════════════════════════
+   ESPACIADORES
+══════════════════════════════════════════════════════════════ */
+.menu-spacer {
+    height: 4vh;
+    flex-shrink: 0;
+    background: var(--blanco);
+    position: relative;
+    z-index: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   GRID WRAPPER — scroll horizontal (desktop/tablet)
+   Las dos tiras son hijos directos y NO tienen overflow propio.
+   El padre scrollea y ambas se mueven perfectamente sincronizadas.
+══════════════════════════════════════════════════════════════ */
+.grid-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 0 8px 20px;
+    touch-action: pan-x;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    z-index: 3;
+    visibility: hidden;  /* oculto hasta que escalarCards() calcule el tamaño */
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+.grid-wrapper::-webkit-scrollbar { display: none; }
+
+.tiras-container {
+    width: max-content;
+    min-width: 100%;
+    padding: 0 20px 0;
+    flex-shrink: 0;
+}
+
+/* Cada tira es un flex horizontal de cards */
+.tira {
+    display: flex;
+    gap: var(--card-gap);
+    width: max-content;
+    align-items: flex-start;
+}
+
+/**
+ * Offset ladrillo de la tira inferior:
+ *   margin-left = (card-w + gap) / 2 = (155 + 36) / 2 ≈ 96px
+ *   Cada card de abajo queda centrada entre dos de arriba.
+ */
+.tira-abajo {
+    margin-top: var(--tira-gap-real, 20px);
+    margin-left: var(--tira-offset);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CARD — unidad visual de producto (desktop/tablet)
+══════════════════════════════════════════════════════════════ */
+.card {
+    position: relative;
+    width: var(--card-w-real, 120px);
+    flex-shrink: 0;
+    text-align: center;
+    cursor: pointer;
+}
+
+/* Contenedor de imagen con altura fija */
+.card-imagen-box {
+    position: relative;
+    width: 100%;
+    height: var(--card-img-h-real, 13vh);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Imagen del producto */
+.producto-img {
+    width:  var(--card-img-w-real, 13vh);
+    height: var(--card-img-h-real, 13vh);
+    object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));
+    pointer-events: none;
+    user-select: none;
+    transition: transform 0.25s;
+    /* Skeleton shimmer mientras la imagen no cargó */
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+.producto-img.loaded {
+    background: none;
+    animation: none;
+    border-radius: 0;
+}
+@keyframes skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.card:hover .producto-img { transform: scale(1.06); }
+
+/* Nombre del producto */
+.card-nombre {
+    margin-top: 4px;
+    font-family: 'Gotham', 'Inter', sans-serif;
+    font-size: calc(var(--card-img-h-real, 96px) * 0.13);
+    font-weight: 700;
+    color: var(--oscuro);
+    line-height: 1.2;
+    padding: 0 4px;
+    text-transform: uppercase;
+}
+
+/* Línea vertical separadora entre categorías — patrón irregular */
+.separador {
+    position: absolute;
+    top: 0;
+    right: calc(var(--card-img-h-real, 96px) * -0.20);
+    width: 2px;
+    height: calc(var(--card-img-h-real, 96px) + 36px);
+    background: repeating-linear-gradient(
+        to bottom,
+        #888 0px,   #888 10px,
+        transparent 10px, transparent 14px,
+        #888 14px,  #888 18px,
+        transparent 18px, transparent 25px,
+        #888 25px,  #888 28px,
+        transparent 28px, transparent 36px,
+        #888 36px,  #888 42px,
+        transparent 42px, transparent 44px
+    );
+    opacity: 0.6;
+    z-index: 1;
+}
+
+/* ── Precio normal ── */
+.precio-texto {
+    position: absolute;
+    top: 8px;
+    right: calc(var(--card-img-h-real, 96px) * -0.10);
+    width: calc(var(--card-img-h-real, 96px) * 0.55);
+    text-align: center;
+    font-family: 'Gotham', 'Inter', sans-serif;
+    font-size: calc(var(--card-img-h-real, 96px) * 0.12);
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.15;
+    pointer-events: none;
+    z-index: 3;
+    white-space: nowrap;
+}
+
+/* ── Precio con oferta activa — apila etiqueta + tachado + nuevo precio ── */
+.precio-oferta-activa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    white-space: normal;
+}
+
+/* Etiqueta tipo "OFERTA", "PROMO", etc. */
+.etiqueta-oferta {
+    background: var(--rojo);
+    color: var(--blanco);
+    font-family: var(--font-ui);
+    font-size: calc(var(--card-img-h-real, 96px) * 0.09);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 1px 5px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    line-height: 1.3;
+}
+
+/* Precio original tachado */
+.precio-normal-tachado {
+    font-family: 'Gotham', 'Inter', sans-serif;
+    font-size: calc(var(--card-img-h-real, 96px) * 0.10);
+    color: var(--gris-claro);
+    text-decoration: line-through;
+    line-height: 1.1;
+}
+
+/* Precio de oferta destacado */
+.precio-oferta {
+    font-family: 'Gotham', 'Inter', sans-serif;
+    font-size: calc(var(--card-img-h-real, 96px) * 0.14);
+    color: var(--rojo);
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PRECIOS MÓVIL
+══════════════════════════════════════════════════════════════ */
+.precio-movil-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.etiqueta-oferta-movil {
+    background: var(--rojo);
+    color: var(--blanco);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.precio-normal-tachado-movil {
+    font-family: 'Gotham', 'Inter', sans-serif;
+    font-size: 11px;
+    color: var(--gris-claro);
+    text-decoration: line-through;
+}
+
+.precio-badge.oferta {
+    background: var(--rojo);
+    font-size: 14px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET (769px – 1024px)
+══════════════════════════════════════════════════════════════ */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+    .texto              { font-size: clamp(28px, 6.5vh, 48px); }
+    .categorias-wrapper { padding: 4px 16px; }
+    .categoria-btn      { font-size: 10px; }
+
+    #cellomenu1 { width: clamp(90px, 14vw, 160px); top: 17vh; right: 44vw; }
+    #cellomenu2 { width: clamp(70px, 12vw, 130px); top: 85vh; left: 1vw; }
+
+    /* Hamburguesa visible en tablet */
+    .categoria-hamburguesa {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        font-size: 15px;
+        color: var(--color-icono);
+        cursor: pointer;
+        padding: 0 4px 5px;
+        flex-shrink: 0;
+        transition: var(--transition-color);
+    }
+    .categoria-hamburguesa.active { color: var(--rojo); }
+
+    /* Activar panel en tablet */
+    .cat-panel  { display: flex; }
+    .cat-panel-overlay { display: block; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE — MÓVIL (≤768px)
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+    /* ── Página fija: solo el grid de productos scrollea ── */
+    html, body {
+        overflow: hidden !important;
+        height: 100%;
+    }
+    .menu-page {
+        height: calc(100vh - 72px);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ── Ocultar logos decorativos y spacer superior ── */
+    #cellomenu1, #cellomenu2 { display: none; }
+    #spacerTop               { display: none; }
+
+    /* ── Slogan compacto ── */
+    .menu-logo-bar { padding: 6px 14px 5px; gap: 8px; }
+    .texto         { font-size: 34px; line-height: 0.88; }
+
+    /* ── Barra de categorías ── */
+    .categorias-wrapper {
+        padding: 6px 12px;
+        gap: 0;
+        align-items: center;
+    }
+
+    /* Hamburguesa visible y fija a la izquierda */
+    .categoria-hamburguesa {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        font-size: 16px;
+        color: var(--color-icono);
+        cursor: pointer;
+        padding: 0 10px 5px 0;
+        flex-shrink: 0;
+        border-right: 1px solid var(--color-borde-linea);
+        margin-right: 10px;
+        transition: var(--transition-color);
+    }
+    .categoria-hamburguesa.active { color: var(--rojo); }
+
+    /* Categorías ocupan el resto del ancho */
+    .categorias    { flex: 1; gap: 16px; }
+    .categoria-btn { font-size: 10px; }
+
+    /* ── Activar panel en móvil ── */
+    .cat-panel         { display: flex; }
+    .cat-panel-overlay { display: block; }
+
+    /* ── Ocultar río horizontal ── */
+    .grid-wrapper { display: none; }
+
+    /* ── Grid vertical móvil ── */
+    .menu-grid-movil {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 16px 14px 24px;
+        flex: 1 1 auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+        align-content: start;
+    }
+
+    /* Card móvil */
+    .card-movil {
+        background: var(--blanco);
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 16px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .card-movil .producto-img-movil {
+        width: 80px;
+        height: 70px;
+        object-fit: contain;
+        flex-shrink: 0;
+        filter: drop-shadow(0 3px 8px rgba(0,0,0,0.12));
+    }
+
+    .card-movil .card-info-movil {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .card-movil .card-nombre-movil {
+        font-family: 'Gotham', 'Inter', sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--oscuro);
+        text-transform: uppercase;
+        line-height: 1.2;
+    }
+
+    .card-movil .precio-badge {
+        background: var(--rojo);
+        color: var(--blanco);
+        font-family: 'Gotham', 'Inter', sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 2px 10px;
+        border-radius: var(--radius-pill);
+        align-self: flex-start;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER DEL MENÚ
+══════════════════════════════════════════════════════════════ */
+.footer-bo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--blanco);
+    padding: 10px 28px;
+    gap: 20px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    font-family: var(--font-ui);
+    z-index: 200;       /* encima del grid-wrapper (z-index: 3) */
+    overflow: visible;  /* permite que el tooltip salga hacia arriba */
+}
+
+.footer-bo-info {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-left: 50px;
+}
+
+.footer-bo-info span,
+.footer-bo-info a {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-texto-secundario);
+    text-decoration: none;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: var(--transition-color);
+}
+.footer-bo-info a:hover { color: var(--rojo); }
+
+/* ── Redes sociales — iconos circulares con tooltip ── */
+.footer-bo-social {
+    display: inline-flex;
+    list-style: none;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.footer-bo-social .icon {
+    position: relative;
+    background: var(--blanco);
+    border-radius: 50%;
+    margin: 6px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    text-decoration: none;
+    color: #000;
+}
+
+/* Forzar negro en el enlace e icono dentro del li */
+.footer-bo-social .icon a,
+.footer-bo-social .icon a i {
+    color: #000 !important;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+/* En hover el icono hereda el blanco del li */
+.footer-bo-social .icon:hover a,
+.footer-bo-social .icon:hover a i {
+    color: #fff !important;
+}
+
+.footer-bo-social .tooltip {
+    position: absolute;
+    top: 0;
+    font-size: 12px;
+    background: var(--blanco);
+    color: var(--blanco);
+    padding: 4px 8px;
+    border-radius: 5px;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    white-space: nowrap;
+    font-family: var(--font-ui);
+    font-weight: 600;
+}
+.footer-bo-social .tooltip::before {
+    position: absolute;
+    content: "";
+    height: 8px;
+    width: 8px;
+    background: var(--blanco);
+    bottom: -3px;
+    left: 50%;
+    transform: translate(-50%) rotate(45deg);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.footer-bo-social .icon:hover .tooltip {
+    top: -40px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.footer-bo-social .facebook:hover,
+.footer-bo-social .facebook:hover .tooltip,
+.footer-bo-social .facebook:hover .tooltip::before { background: #1877f2; color: #fff; }
+
+.footer-bo-social .instagram:hover,
+.footer-bo-social .instagram:hover .tooltip,
+.footer-bo-social .instagram:hover .tooltip::before { background: #e4405f; color: #fff; }
+
+.footer-bo-social .whatsapp:hover,
+.footer-bo-social .whatsapp:hover .tooltip,
+.footer-bo-social .whatsapp:hover .tooltip::before { background: #25d366; color: #fff; }
+
+.footer-bo-social .tiktok:hover,
+.footer-bo-social .tiktok:hover .tooltip,
+.footer-bo-social .tiktok:hover .tooltip::before { background: #000; color: #fff; }
+
+@media (max-width: 768px) {
+    .footer-bo {
+        flex-direction: column;
+        align-items: center;
+        padding: 16px;
+        gap: 12px;
+        text-align: center;
+    }
+    .footer-bo-info,
+    .footer-bo-social { display: none; }
+}
+
+
+
+
+.prod-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(4px);
+    animation: prodModalFadeIn 0.22s ease;
+    overflow-y: auto;
+}
+
+@keyframes prodModalFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.prod-modal-box {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    width: min(900px, 100%);
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+    animation: prodModalSlideUp 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes prodModalSlideUp {
+    from { transform: translateY(40px) scale(0.97); opacity: 0; }
+    to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+.prod-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.08);
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+    z-index: 10;
+}
+.prod-modal-close:hover {
+    background: #c62828;
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+.prod-modal-left {
+    flex: 0 0 48%;
+    background: #f7f7f7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 20px 16px;
+    gap: 12px;
+    border-right: 1px solid #eee;
+}
+
+.prod-modal-img-wrap {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+
+.prod-modal-img-main {
+    max-width: 100%;
+    max-height: 340px;
+    object-fit: contain;
+    border-radius: 10px;
+    transition: opacity 0.2s;
+}
+
+.prod-modal-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #c62828;
+    color: #fff;
+    font-family: 'Gotham', 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.prod-modal-thumbs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.prod-thumb {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+    background: #eee;
+}
+.prod-thumb:hover  { transform: scale(1.08); }
+.prod-thumb.active { border-color: #c62828; }
+
+.prod-modal-right {
+    flex: 1;
+    padding: 36px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.prod-modal-categoria {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #c62828;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.prod-modal-nombre {
+    font-family: 'Gotham', 'Inter', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.prod-modal-precio-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.prod-modal-precio-tachado {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: #aaa;
+    text-decoration: line-through;
+}
+
+.prod-modal-precio {
+    font-family: 'Gotham', 'Inter', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #1b5e20;
+}
+.prod-modal-precio.oferta { color: #c62828; }
+
+.prod-modal-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+}
+
+.prod-modal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.prod-meta-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+}
+.prod-meta-tag.combo  { background: #fff3cd; color: #856404; }
+.prod-meta-tag.destac { background: #fff8e1; color: #e65100; }
+.prod-meta-tag.dia    { background: #e8f5e9; color: #1b5e20; }
+
+.prod-modal-btn-pedir {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 20px;
+    margin-top: 16px;
+    background: #c62828;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Gotham', 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(198, 40, 40, 0.35);
+}
+.prod-modal-btn-pedir:hover {
+    background: #a81e1e;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(198, 40, 40, 0.45);
+}
+.prod-modal-btn-pedir:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(198, 40, 40, 0.3);
+}
+
+@media (max-width: 640px) {
+    .prod-modal-box {
+        flex-direction: column;
+        max-height: 92vh;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        border-radius: 20px 20px 0 0;
+        animation: prodModalSlideUpMobile 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+    @keyframes prodModalSlideUpMobile {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+    }
+    .prod-modal-left {
+        flex: 0 0 auto;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding: 20px 16px 12px;
+    }
+    .prod-modal-img-main { max-height: 220px; }
+    .prod-modal-right {
+        flex: 1;
+        padding: 20px 20px 24px;
+        overflow-y: auto;
+    }
+    .prod-modal-nombre { font-size: 1.3rem; }
+    .prod-modal-precio { font-size: 1.5rem; }
+}

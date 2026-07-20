@@ -1,0 +1,626 @@
+/* ══════════════════════════════════════════════
+   convenio.css — Cuponera / Convenios Paraguay
+   ══════════════════════════════════════════════ */
+
+:root {
+    --ink:        #1a1a1a;
+    --petrol:     #1a1a1a;
+    --petrol-deep:#111;
+    --paper:      #fff;
+    --paper-dim:  #f5f5f5;
+    --amber:      #ffcc00;
+    --amber-deep: #e6b800;
+    --coral:      #c62828;
+    --font-display: 'Fraunces', serif;
+    --font-body:    'Segoe UI', sans-serif;
+    --font-mono:    'IBM Plex Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: #fff;
+}
+
+/* ══════════════════════════════════════════════
+   TÍTULO CUPONERA
+   ── Para cambiar el tamaño edita font-size ──
+   clamp(mínimo, fluido, máximo)
+   Ejemplo más grande: clamp(60px, 14vh, 200px)
+   ══════════════════════════════════════════════ */
+.conv-logo-bar {
+    display: flex;
+    align-items: center;
+    padding: 4px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    overflow: hidden;
+}
+
+.conv-logo-bar .texto {
+    font-family: 'Boogaloo', sans-serif;
+    font-size: clamp(60px, 14vh, 180px); /* igual que contacto.php */
+    line-height: 0.88;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+}
+
+.convenio-instruccion {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ══════════════════════════════════════════════
+   SECCIÓN TICKET
+   ══════════════════════════════════════════════ */
+.convenio-section {
+    background: #fff;
+    padding: 48px 24px 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ticket-wrap {
+    position: relative;
+    max-width: 680px;
+    width: 100%;
+    filter: drop-shadow(0 24px 48px rgba(0,0,0,0.35));
+}
+
+.ticket {
+    background: var(--paper);
+    border-radius: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    position: relative;
+    overflow: hidden;
+}
+
+.ticket-side {
+    padding: 38px 34px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 260px;
+}
+
+.ticket-side.right {
+    background: var(--paper-dim);
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+/* ── Perforación central ── */
+.perforation {
+    position: relative;
+    background: linear-gradient(var(--petrol-deep), var(--petrol-deep)) center / 2px 100% no-repeat;
+}
+
+.perforation::before,
+.perforation::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--petrol);
+}
+
+.perforation::before { top: -13px; }
+.perforation::after  { bottom: -13px; }
+
+.perf-dashes {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    border-left: 2px dashed #ccc;
+}
+
+/* ── Formulario lado izquierdo ── */
+/* ── Input carnet — estilo glitch ── */
+.input-container {
+    position: relative;
+    width: 100%;
+}
+
+.carnet-input {
+    width: 100%;
+    height: 60px;
+    padding: 12px;
+    font-size: 18px;
+    font-family: "Courier New", monospace;
+    color: #000;
+    background-color: #fff;
+    border: 4px solid #000;
+    border-radius: 0;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 8px 8px 0 #000;
+}
+
+.carnet-input::placeholder { color: #888; }
+
+.carnet-input:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0 #000;
+}
+
+.carnet-input:focus {
+    background-color: #010101;
+    color: #fff;
+    border-color: #d6d9dd;
+    animation: shake 0.5s ease-in-out;
+}
+
+.carnet-input:focus::placeholder { color: #fff; }
+
+.carnet-input:not(:placeholder-shown) {
+    animation: glitch 1s linear infinite;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* cursor parpadeante */
+.input-container::after {
+    content: "|";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #000;
+    pointer-events: none;
+    animation: blink 0.7s step-end infinite;
+}
+
+.carnet-input:focus ~ .input-cursor { color: #fff; }
+
+@keyframes shake {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-5px) rotate(-1deg); }
+    50%  { transform: translateX(5px)  rotate(1deg); }
+    75%  { transform: translateX(-5px) rotate(-1deg); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes glitch {
+    0%   { transform: none; opacity: 1; }
+    7%   { transform: skew(-0.5deg, -0.9deg); opacity: 0.75; }
+    10%  { transform: none; opacity: 1; }
+    30%  { transform: skew(0.8deg, -0.1deg); opacity: 0.75; }
+    35%  { transform: none; opacity: 1; }
+    55%  { transform: skew(-1deg, 0.2deg); opacity: 0.75; }
+    60%  { transform: none; opacity: 1; }
+    75%  { transform: skew(0.4deg, 1deg); opacity: 0.75; }
+    80%  { transform: none; opacity: 1; }
+    100% { transform: none; opacity: 1; }
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+.btn-generar {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 15px;
+    gap: 15px;
+    background-color: #181717;
+    outline: 3px #181717 solid;
+    outline-offset: -3px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: 400ms;
+}
+
+.btn-generar .text {
+    color: white;
+    font-weight: 700;
+    font-size: 1em;
+    transition: 400ms;
+}
+
+.btn-generar svg path { transition: 400ms; }
+
+.btn-generar:hover { background-color: transparent; }
+.btn-generar:hover .text { color: #181717; }
+.btn-generar:hover svg path { fill: #181717; }
+
+.btn-generar:disabled {
+    background-color: #aaa;
+    outline-color: #aaa;
+    cursor: default;
+}
+.btn-generar:disabled .text { color: #eee; }
+
+.helper-text { margin-top: 10px; font-size: 12.5px; color: #777; }
+.helper-text.error { color: var(--coral); font-weight: 500; }
+
+/* ── Lado derecho: estados ── */
+.placeholder-state {
+    color: #888;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.placeholder-icon {
+    font-size: 26px;
+    margin-bottom: 10px;
+    opacity: .6;
+}
+
+.code-state { display: none; width: 100%; }
+
+.code-state.active {
+    display: block;
+    animation: reveal .5s cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes reveal {
+    from { opacity: 0; transform: translateY(8px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);   }
+}
+
+.code-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.code-value {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: clamp(22px, 4vw, 30px);
+    letter-spacing: 0.04em;
+    color: var(--coral);
+    background: #fff;
+    border: 1.5px dashed var(--coral);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+}
+
+.countdown-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    justify-content: center;
+    color: var(--coral);
+    font-family: var(--font-mono);
+    font-size: 13px;
+}
+
+.countdown-value { font-size: 17px; font-weight: 600; }
+
+.code-note {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #777;
+    max-width: 220px;
+}
+
+.stamp {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--coral);
+    border: 2px solid var(--coral);
+    border-radius: 6px;
+    padding: 3px 8px;
+    transform: rotate(8deg) scale(0);
+    opacity: 0;
+    transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .4s ease;
+}
+
+.stamp.active { transform: rotate(8deg) scale(1); opacity: 1; }
+
+.convenio-foot {
+    margin-top: 26px;
+    font-size: 13px;
+    color: #aaa;
+    text-align: center;
+    max-width: 480px;
+    line-height: 1.6;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — mismo patrón que contacto.css
+   ══════════════════════════════════════════════ */
+
+/* ── Tablet 769–1024px ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .convenio-section {
+        padding: 36px 28px 48px;
+    }
+}
+
+/* ── Mobile ≤ 768px ── */
+@media (max-width: 768px) {
+
+    /* Título más compacto en móvil */
+    .conv-logo-bar {
+        padding: 16px 20px 12px;
+    }
+
+    .conv-logo-bar .texto {
+        font-size: clamp(36px, 11vw, 56px);
+        line-height: 0.9;
+    }
+
+    /* Ticket en columna vertical */
+    .ticket {
+        grid-template-columns: 1fr;
+        border-radius: 14px;
+    }
+
+    /* Perforación horizontal */
+    .perforation {
+        height: 24px;
+        background: linear-gradient(90deg, var(--petrol-deep), var(--petrol-deep))
+                    center / 100% 2px no-repeat;
+    }
+    .perforation::before,
+    .perforation::after {
+        top:       50%;
+        transform: translateY(-50%);
+    }
+    .perforation::before { left: -13px; }
+    .perforation::after  { left: auto; right: -13px; }
+
+    .perf-dashes {
+        left:        20px;
+        right:       20px;
+        top:         50%;
+        transform:   translateY(-50%);
+        width:       auto;
+        height:      0;
+        bottom:      auto;
+        border-left: none;
+        border-top:  2px dashed #ccc;
+    }
+
+    /* Sección y lados */
+    .convenio-section {
+        padding: 20px 20px 40px;
+    }
+
+    .ticket-side {
+        padding:    24px 20px;
+        min-height: unset;
+    }
+
+    .ticket-side.right {
+        padding-top: 28px;
+    }
+
+    /* Input: reducir sombra lateral que sale del viewport */
+    .carnet-input {
+        height:     52px;
+        font-size:  16px;
+        box-shadow: 5px 5px 0 #000;
+    }
+    .carnet-input:hover {
+        transform:  translate(-2px, -2px);
+        box-shadow: 7px 7px 0 #000;
+    }
+
+    /* Botón generar full width */
+    .btn-generar {
+        width:      100%;
+        margin-top: 14px;
+    }
+
+    /* Código */
+    .code-value {
+        font-size: clamp(18px, 5.5vw, 26px);
+    }
+
+    .code-note {
+        max-width: 100%;
+        font-size: 11px;
+    }
+
+    .convenio-foot {
+        font-size:  12px;
+        margin-top: 18px;
+        padding:    0 4px;
+    }
+
+    /* Espacio para bottom nav (mismo que contacto) */
+    .convenio-section {
+        padding-bottom: calc(40px + env(safe-area-inset-bottom));
+    }
+}
+
+/* ── Mobile pequeño ≤ 380px ── */
+@media (max-width: 380px) {
+    .conv-logo-bar {
+        padding: 20px 14px 14px;
+    }
+
+    .ticket-side {
+        padding: 18px 16px;
+    }
+
+    .carnet-input {
+        height:    46px;
+        font-size: 15px;
+    }
+
+    .code-value {
+        font-size: clamp(16px, 5vw, 22px);
+        padding:   8px 10px;
+    }
+
+    #codeValueBox {
+        padding: 6px 6px 6px 10px;
+    }
+
+    .copy {
+        --button-diameter: 30px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .code-state.active { animation: none; }
+    .stamp { transition: none; }
+}
+
+/* ══════════════════════════════════════════════
+   CÓDIGO + BOTÓN COPIAR integrado
+   ══════════════════════════════════════════════ */
+
+/* El rectángulo dashed ahora es flex para contener código + botón */
+#codeValueBox {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    gap:             0;
+    padding:         8px 8px 8px 14px; /* menos padding derecho para el botón */
+}
+
+/* El span del código */
+#codeValueBox #codeValue {
+    flex:        1;
+    text-align:  center;
+    line-height: 1;
+}
+
+/* Separador vertical entre código y botón */
+#codeValueBox .copy-divider {
+    width:        1.5px;
+    height:       26px;
+    background:   var(--coral);
+    opacity:      0.3;
+    flex-shrink:  0;
+    margin:       0 6px;
+}
+
+/* Botón copy — colores coordinados con --coral */
+.copy {
+    --button-bg:               transparent;
+    --button-hover-bg:         rgba(198, 40, 40, 0.08);
+    --button-text-color:       var(--coral);
+    --button-hover-text-color: var(--coral);
+    --button-border-radius:    8px;
+    --button-diameter:         34px;
+    --button-outline-width:    1.5px;
+    --button-outline-color:    var(--coral);
+    --tooltip-bg:              #fff8f8;
+    --tooltip-border-radius:   4px;
+    --tooltip-font-family:     'IBM Plex Mono', Menlo, monospace;
+    --tooltip-font-size:       11px;
+    --tooltip-text-color:      var(--coral);
+    --tooltip-padding-x:       7px;
+    --tooltip-padding-y:       6px;
+    --tooltip-offset:          8px;
+
+    box-sizing:       border-box;
+    width:            var(--button-diameter);
+    height:           var(--button-diameter);
+    border-radius:    var(--button-border-radius);
+    background-color: var(--button-bg);
+    color:            var(--button-text-color);
+    border:           none;
+    cursor:           pointer;
+    position:         relative;
+    outline:          none;
+    flex-shrink:      0;
+    transition:       background .2s ease;
+}
+
+/* Tooltip */
+.copy .tooltip {
+    position:       absolute;
+    opacity:        0;
+    visibility:     hidden;
+    top:            0;
+    left:           50%;
+    transform:      translateX(-50%);
+    white-space:    nowrap;
+    font:           var(--tooltip-font-size) var(--tooltip-font-family);
+    color:          var(--tooltip-text-color);
+    background:     var(--tooltip-bg);
+    border:         1px solid var(--coral);
+    padding:        var(--tooltip-padding-y) var(--tooltip-padding-x);
+    border-radius:  var(--tooltip-border-radius);
+    pointer-events: none;
+    transition:     opacity .18s cubic-bezier(.68,-.55,.265,1.55),
+                    top     .18s cubic-bezier(.68,-.55,.265,1.55);
+}
+
+.copy .tooltip::before { content: attr(data-text-initial); }
+
+.copy .tooltip::after {
+    content:        "";
+    position:       absolute;
+    bottom:         calc(var(--tooltip-padding-y) / 2 * -1);
+    width:          var(--tooltip-padding-y);
+    height:         var(--tooltip-padding-y);
+    background:     var(--tooltip-bg);
+    border-right:   1px solid var(--coral);
+    border-bottom:  1px solid var(--coral);
+    left:           50%;
+    transform:      translateX(-50%) rotate(45deg);
+    pointer-events: none;
+}
+
+/* SVGs centrados */
+.copy svg {
+    position:  absolute;
+    top:       50%;
+    left:      50%;
+    transform: translate(-50%, -50%);
+}
+
+.copy .checkmark { display: none; }
+
+/* Hover */
+.copy:hover .tooltip {
+    opacity:    1;
+    visibility: visible;
+    top: calc((100% + var(--tooltip-offset)) * -1);
+}
+
+/* Click/focus — "¡Copiado!" + checkmark */
+.copy:focus:not(:focus-visible) .tooltip {
+    opacity:    1;
+    visibility: visible;
+    top: calc((100% + var(--tooltip-offset)) * -1);
+}
+.copy:focus:not(:focus-visible) .tooltip::before { content: attr(data-text-end); }
+.copy:focus:not(:focus-visible) .clipboard       { display: none;  }
+.copy:focus:not(:focus-visible) .checkmark        { display: block; }
+
+.copy:hover,
+.copy:focus { background-color: var(--button-hover-bg); }
+
+.copy:active { outline: var(--button-outline-width) solid var(--button-outline-color); }
+
+/* Quitar .code-row que ya no se usa */
+.code-row { display: none; }

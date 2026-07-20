@@ -1,0 +1,217 @@
+/* =============================================
+   CONTACTO.CSS — Página de contacto
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Boogaloo&display=swap');
+
+@font-face {
+    font-family: 'Gotham';
+    src: url('../../tipografia/gothamnarrowoffice_bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --rojo:   #c62828;
+    --oscuro: #1a1a1a;
+    --gris:   #f5f5f5;
+    --font:   'Gotham', 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font);
+    background: #fff;
+    color: var(--oscuro);
+}
+
+/* ── Contenedor principal ── */
+.contacto-page {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Título ── */
+.contacto-header {
+    display: flex;
+    align-items: center;
+    padding: 4px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    overflow: hidden;
+}
+
+.contacto-header h1 {
+    font-family: 'Boogaloo', sans-serif;
+    font-size: clamp(60px, 14vh, 180px);
+    font-weight: 400;
+    letter-spacing: 1px;
+    color: #000;
+    line-height: 0.88;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* ── Grid de contenido ── */
+.contacto-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    flex: 1;
+}
+
+/* ── Sección de datos ── */
+.contacto-info {
+    padding: 48px 40px;
+    border-right: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.contacto-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.contacto-item i {
+    font-size: 22px;
+    color: var(--rojo);
+    margin-top: 2px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+}
+
+.contacto-item strong {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    margin-bottom: 4px;
+}
+
+.contacto-item p,
+.contacto-item a {
+    font-size: 16px;
+    color: var(--oscuro);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.contacto-item a:hover { color: var(--rojo); }
+
+/* ── Sección de redes ── */
+.contacto-redes {
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.contacto-redes h2 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    margin-bottom: 24px;
+}
+
+/* ── Redes sociales — diseño circular asimétrico ── */
+.social-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    width: fit-content;
+}
+
+.social-up,
+.social-down {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
+/* Base de todas las cards */
+.social-card {
+    width: 130px;
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: none;
+    text-decoration: none;
+    box-shadow: rgba(50,50,93,0.25) 0px 2px 5px -1px,
+                rgba(0,0,0,0.3) 0px 1px 3px -1px;
+    transition: scale 0.2s ease-in-out, background 0.2s ease-in-out;
+    cursor: pointer;
+}
+.social-card:hover { scale: 1.1; }
+
+/* Esquinas asimétricas — forman el círculo */
+.card-instagram { border-radius: 130px 5px 5px 5px; }  /* sup-izq grande */
+.card-facebook  { border-radius: 5px 130px 5px 5px; }  /* sup-der grande */
+.card-whatsapp  { border-radius: 5px 5px 5px 130px; }  /* inf-izq grande */
+.card-tiktok    { border-radius: 5px 5px 130px 5px; }  /* inf-der grande */
+
+/* Iconos — posición igual que el ejemplo original */
+.icon-instagram {
+    fill: #cc39a4;
+    margin-top: 1.5em;
+    margin-left: 1.2em;
+}
+.icon-facebook {
+    fill: #1877f2;
+    margin-top: 1.5em;
+    margin-left: -0.9em;
+}
+.icon-whatsapp {
+    fill: #25d366;
+    margin-top: -0.6em;
+    margin-left: 1.2em;
+}
+.icon-tiktok {
+    fill: #000;
+    margin-top: -0.9em;
+    margin-left: -1.2em;
+}
+
+/* Hover — solo cambia fondo e icono a blanco, sin mover nada */
+.card-instagram:hover               { background: #cc39a4; }
+.card-instagram:hover .icon-instagram { fill: white; }
+
+.card-facebook:hover                { background: #1877f2; }
+.card-facebook:hover .icon-facebook  { fill: white; }
+
+.card-whatsapp:hover                { background: #25d366; }
+.card-whatsapp:hover .icon-whatsapp  { fill: white; }
+
+.card-tiktok:hover                  { background: #000; }
+.card-tiktok:hover .icon-tiktok      { fill: white; }
+
+/* ── Responsive tablet ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .contacto-header { padding: 36px 28px 20px; }
+    .contacto-grid   { grid-template-columns: 1fr 1fr; }
+    .contacto-info   { padding: 36px 28px; }
+    .contacto-redes  { padding: 36px 28px; }
+    .redes-grid      { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Responsive móvil ── */
+@media (max-width: 768px) {
+    .contacto-header { padding: 32px 20px 20px; }
+    .contacto-grid   { grid-template-columns: 1fr; }
+    .contacto-info   { padding: 32px 20px; border-right: none; border-bottom: 1px solid #eee; gap: 24px; }
+    .contacto-redes  { padding: 32px 20px; }
+    .redes-grid      { grid-template-columns: 1fr 1fr; }
+    /* Espacio para el bottom nav del navbar */
+    .contacto-page   { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+}

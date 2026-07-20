@@ -1,0 +1,20 @@
+# Dependencias PHP
+vendor/
+composer.lock
+
+# Datos sensibles de estudiantes (Excels con carnets reales)
+gabriel_datos/
+upsa_datos/
+
+# Uploads generados por usuarios
+uploads/productos/
+uploads/popups/
+uploads/sucursales/
+
+# Archivos de sistema
+.DS_Store
+*.DS_Store
+tmp/
+
+# Config con credenciales (ajustar si se usa config de ejemplo)
+# config.php
