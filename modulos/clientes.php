@@ -210,7 +210,7 @@ $clientes = $pdo->query("SELECT * FROM clientes ORDER BY nombre ASC")->fetchAll(
             <div class="form-group">
                 <label>Fecha de Nacimiento</label>
                 <input type="date" name="fecha_nacimiento" value="<?php echo $cliente_edit['fecha_nacimiento'] ?? ''; ?>">
-                <small style="color:#999; font-size:11px;">Opcional — para alerta de cumpleaños al canjear.</small>
+                
             </div>
         </div>
         
