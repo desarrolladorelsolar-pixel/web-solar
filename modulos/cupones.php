@@ -66,7 +66,25 @@ if (isset($_POST['btn_guardar_cupon'])) {
     exit;
 }
 
-// --- B. ANULAR CUPÓN (CAMBIO DE ESTADO) ---
+// --- B. ANULAR CUPÓN CON MOTIVO (RF-04) ---
+if (isset($_POST['btn_anular_cupon'])) {
+    $id_cupon = (int)$_POST['id_cupon_anular'];
+    $motivo   = trim($_POST['motivo_anulacion'] ?? '');
+
+    if (empty($motivo)) {
+        echo "<script>alert('❌ El motivo de anulación es obligatorio.'); history.back();</script>";
+        exit;
+    }
+
+    $pdo->prepare("UPDATE cupones SET estado = 0, motivoanulado = ? WHERE id = ?")
+        ->execute([$motivo, $id_cupon]);
+    registrarLog($pdo, "ANULAR_CUPON",
+        "Cupón ID: $id_cupon anulado. Motivo: $motivo — Usuario ID: " . ($_SESSION['user_id'] ?? '?'));
+    echo "<script>window.location='admin.php?mod=cupones';</script>";
+    exit;
+}
+
+// --- B2. TOGGLE ESTADO (legacy — ya no se usa, se mantiene por compatibilidad) ---
 if (isset($_GET['toggle_estado'])) {
     $id_cupon = $_GET['toggle_estado'];
     $estado_actual = $_GET['estado'] ?? 0;
@@ -152,6 +170,7 @@ if (isset($_GET['edit'])) {
             <th>Vigencia</th>
             <th style="text-align:center;">Usado</th>
             <th style="text-align:center;">Estado</th>
+            <th>Motivo Anulación</th>
             <th style="text-align:right; padding-right:18px;">Acciones</th>
         </tr>
     </thead>
@@ -178,18 +197,36 @@ if (isset($_GET['edit'])) {
             </td>
             <td style="text-align:center;">
                 <?php if($c['estado']): ?>
-                    <a>✅ Activo</a>
+                    <span style="background:#e8f5e9; color:#1b5e20; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:bold;">✅ Activo</span>
                 <?php else: ?>
-                    <a>⛔ Anulado</a>
+                    <span style="background:#ffebee; color:#c62828; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:bold; display:inline-block;">⛔ Anulado</span>
+                <?php endif; ?>
+            </td>
+            <td style="font-size:12px; color:#888; max-width:160px;">
+                <?php if (!empty($c['motivoanulado'])): ?>
+                    <span title="<?php echo htmlspecialchars($c['motivoanulado']); ?>"
+                          style="display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <?php echo htmlspecialchars($c['motivoanulado']); ?>
+                    </span>
+                <?php else: ?>
+                    <span style="color:#ccc;">—</span>
                 <?php endif; ?>
             </td>
             <td style="text-align:right; padding-right:18px; white-space:nowrap;">
-                <a href="admin.php?mod=cupones&del=<?php echo $c['id']; ?>" class="btn-pastilla btn-delete" onclick="return confirm('¿Estás seguro de eliminar el cupón: <?php echo $c['codigo']; ?>?')">🗑️</a>
+                <?php if($c['estado'] && !$c['usado']): ?>
+                    <button type="button"
+                            onclick="abrirModalAnular(<?php echo $c['id']; ?>, '<?php echo addslashes($c['codigo']); ?>')"
+                            class="btn-pastilla btn-delete" title="Anular cupón">
+                        🗑️
+                    </button>
+                <?php else: ?>
+                    <span style="color:#ccc; font-size:12px; padding:5px 10px; display:inline-block;" title="<?php echo $c['usado'] ? 'Cupón ya usado' : 'Ya anulado'; ?>">🗑️</span>
+                <?php endif; ?>
             </td>
         </tr>
         <?php endforeach; ?>
         <?php if(empty($cupones)): ?>
-            <tr><td colspan="7" style="text-align:center; padding:40px; color:#aaa;">No hay cupones registrados aún. ¡Crea el primero!</td></tr>
+            <tr><td colspan="8" style="text-align:center; padding:40px; color:#aaa;">No hay cupones registrados aún. ¡Crea el primero!</td></tr>
         <?php endif; ?>
     </tbody>
 </table>
@@ -336,4 +373,43 @@ if (isset($_GET['edit'])) {
 
     function cerrarConfirmar() { document.getElementById('modalConfirm').style.display = 'none'; }
     function finalizarEnvio() { cerrarConfirmar(); document.getElementById('submitReal').click(); }
+
+    // ── MODAL ANULACIÓN (RF-04) ──────────────────────────────
+    function abrirModalAnular(id, codigo) {
+        document.getElementById('anular_id').value = id;
+        document.getElementById('anular_titulo').textContent = 'Anular cupón ' + codigo;
+        document.getElementById('anular_motivo').value = '';
+        document.getElementById('modalAnular').style.display = 'flex';
+        document.getElementById('anular_motivo').focus();
+    }
+    function cerrarModalAnular() {
+        document.getElementById('modalAnular').style.display = 'none';
+    }
 </script>
+
+<!-- MODAL ANULACIÓN -->
+<div id="modalAnular" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:10001; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:32px; border-radius:12px; width:420px; max-width:92vw; border-top:6px solid #c62828; box-shadow:0 20px 50px rgba(0,0,0,.4);">
+        <h3 id="anular_titulo" style="margin:0 0 6px; color:#c62828; font-size:16px;"></h3>
+        <p style="color:#666; font-size:13px; margin:0 0 20px;">Esta acción marcará el cupón como <strong>Anulado</strong>. Ingresá el motivo obligatoriamente.</p>
+        <form method="POST">
+            <input type="hidden" name="id_cupon_anular" id="anular_id">
+            <div style="margin-bottom:16px;">
+                <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">Motivo de anulación *</label>
+                <textarea name="motivo_anulacion" id="anular_motivo" required
+                          rows="3" placeholder="Ej: Cupón duplicado, campaña cancelada, error en creación..."
+                          style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px; box-sizing:border-box; resize:vertical;"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" onclick="cerrarModalAnular()"
+                        style="background:#f4f4f4; color:#555; border:none; padding:11px 22px; border-radius:6px; cursor:pointer; font-weight:700;">
+                    Cancelar
+                </button>
+                <button type="submit" name="btn_anular_cupon"
+                        style="background:#c62828; color:#fff; border:none; padding:11px 22px; border-radius:6px; cursor:pointer; font-weight:700;">
+                    ⛔ Confirmar anulación
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

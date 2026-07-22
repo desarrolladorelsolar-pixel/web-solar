@@ -11,20 +11,19 @@ if (isset($_POST['btn_guardar_cliente'])) {
     $documento = $_POST['documento'];
     $tipo_documento = $_POST['tipo_documento'];
     $direccion = $_POST['direccion'];
+    $fecha_nacimiento = !empty($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : null;
     $estado = isset($_POST['estado']) ? 1 : 0;
 
     if (empty($id)) {
-        // NUEVO CLIENTE
         $estado = 1;
-        $sql = "INSERT INTO clientes (nombre, email, telefono, documento, tipo_documento, direccion, estado) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $pdo->prepare($sql)->execute([$nombre, $email, $telefono, $documento, $tipo_documento, $direccion, $estado]);
+        $sql = "INSERT INTO clientes (nombre, email, telefono, documento, tipo_documento, direccion, fecha_nacimiento, estado) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $pdo->prepare($sql)->execute([$nombre, $email, $telefono, $documento, $tipo_documento, $direccion, $fecha_nacimiento, $estado]);
         registrarLog($pdo, "INSERTAR_CLIENTE", "Se creó el cliente: $nombre");
     } else {
-        // EDITAR CLIENTE
         $estado = 1;
-        $sql = "UPDATE clientes SET nombre = ?, email = ?, telefono = ?, documento = ?, tipo_documento = ?, direccion = ?, estado = ? WHERE id = ?";
-        $pdo->prepare($sql)->execute([$nombre, $email, $telefono, $documento, $tipo_documento, $direccion, $estado, $id]);
+        $sql = "UPDATE clientes SET nombre = ?, email = ?, telefono = ?, documento = ?, tipo_documento = ?, direccion = ?, fecha_nacimiento = ?, estado = ? WHERE id = ?";
+        $pdo->prepare($sql)->execute([$nombre, $email, $telefono, $documento, $tipo_documento, $direccion, $fecha_nacimiento, $estado, $id]);
         registrarLog($pdo, "EDITAR_CLIENTE", "Se actualizó el cliente: $nombre (ID: $id)");
     }
     echo "<script>window.location='admin.php?mod=clientes';</script>";
@@ -207,8 +206,12 @@ $clientes = $pdo->query("SELECT * FROM clientes ORDER BY nombre ASC")->fetchAll(
                 <label>Dirección</label>
                 <textarea name="direccion" placeholder="Dirección completa"><?php echo $cliente_edit['direccion'] ?? ''; ?></textarea>
             </div>
-            
- 
+
+            <div class="form-group">
+                <label>Fecha de Nacimiento</label>
+                <input type="date" name="fecha_nacimiento" value="<?php echo $cliente_edit['fecha_nacimiento'] ?? ''; ?>">
+                <small style="color:#999; font-size:11px;">Opcional — para alerta de cumpleaños al canjear.</small>
+            </div>
         </div>
         
         <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
@@ -233,6 +236,7 @@ $clientes = $pdo->query("SELECT * FROM clientes ORDER BY nombre ASC")->fetchAll(
                 <th>Cliente</th>
                 <th>Contacto</th>
                 <th>Documento</th>
+                <th>Nacimiento</th>
                 <th>Estado</th>
                 <th style="text-align:center;">Acciones</th>
             </tr>
@@ -267,6 +271,25 @@ $clientes = $pdo->query("SELECT * FROM clientes ORDER BY nombre ASC")->fetchAll(
                         <span class="badge" style="background:#f3e5f5; color:#6a1b9a;">
                             <?php echo $c['tipo_documento']; ?>: <?php echo $c['documento']; ?>
                         </span>
+                    <?php else: ?>
+                        <span style="color:#ccc;">—</span>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if (!empty($c['fecha_nacimiento'])): ?>
+                        <?php
+                        $hoy_md    = date('m-d');
+                        $cumple_md = date('m-d', strtotime($c['fecha_nacimiento']));
+                        $es_cumple = ($hoy_md === $cumple_md);
+                        ?>
+                        <span style="font-size:13px; color:#555;">
+                            <?php echo date('d/m/Y', strtotime($c['fecha_nacimiento'])); ?>
+                        </span>
+                        <?php if ($es_cumple): ?>
+                            <span style="background:#fff3cd; color:#856404; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:4px;">
+                                HOY
+                            </span>
+                        <?php endif; ?>
                     <?php else: ?>
                         <span style="color:#ccc;">—</span>
                     <?php endif; ?>

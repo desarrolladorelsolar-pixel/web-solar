@@ -75,10 +75,7 @@ $popup = $stmt->fetch();
     justify-content: flex-start;
     overflow: hidden;
 }
-.hero-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(120deg, rgba(0,0,0,0.72) 40%, rgba(0,0,0,0.15) 100%);
-}
+.hero-overlay { display: none; }
 .hero-content {
     position: relative; z-index: 2;
     padding: 0 6vw;
@@ -88,7 +85,7 @@ $popup = $stmt->fetch();
     font-family: 'Gotham','Inter',sans-serif;
     font-size: 11px; font-weight: 700;
     letter-spacing: 3px; text-transform: uppercase;
-    color: #ffcc00; margin-bottom: 12px;
+    color: #c62828; margin-bottom: 12px;
 }
 .hero-h1 {
     font-family: 'Boogaloo', sans-serif;
@@ -96,13 +93,13 @@ $popup = $stmt->fetch();
     font-weight: 400;
     line-height: 0.88;
     text-transform: uppercase;
-    color: #fff;
+    color: #1a1a1a;
     margin: 0 0 10px;
 }
-.hero-h1 span { color: #ffcc00; }
+.hero-h1 span { color: #c62828; }
 .hero-desc {
     font-family: 'Gotham','Inter',sans-serif;
-    font-size: 15px; color: rgba(255,255,255,0.82);
+    font-size: 15px; color: #444;
     margin: 0 0 28px; line-height: 1.5;
 }
 .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
@@ -118,15 +115,15 @@ $popup = $stmt->fetch();
 .btn-red:hover { background: #a81e1e; transform: translateY(-2px); }
 .btn-outline {
     display: inline-flex; align-items: center; gap: 8px;
-    background: transparent; color: #fff;
+    background: transparent; color: #1a1a1a;
     padding: 14px 28px; border-radius: 50px;
-    border: 2px solid rgba(255,255,255,0.5);
+    border: 2px solid #1a1a1a;
     font-family: 'Gotham','Inter',sans-serif;
     font-size: 13px; font-weight: 700; letter-spacing: 1px;
     text-transform: uppercase; text-decoration: none;
-    transition: border-color .2s, background .2s;
+    transition: border-color .2s, background .2s, color .2s;
 }
-.btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.1); }
+.btn-outline:hover { background: #1a1a1a; color: #fff; }
 
 /* Logos arrastrables dentro del hero */
 .cello1 {
@@ -203,12 +200,12 @@ $popup = $stmt->fetch();
 /* ── CARRUSEL FOTOS (fotopage) ── */
 .promo-section {
     padding: 60px 24px 70px;
-    background: #1a1a1a;
+    background: #fff;
 }
 .promo-titulo {
     font-family: 'Boogaloo', sans-serif;
     font-size: clamp(32px,5vw,60px);
-    color: #ffcc00; text-align: center;
+    color: #1a1a1a; text-align: center;
     margin-bottom: 36px; font-weight: 400;
 }
 .promo-carrusel-wrapper {
@@ -315,7 +312,7 @@ $popup = $stmt->fetch();
     <div class="hero-content">
         <div class="hero-eyebrow">Santa Cruz de la Sierra, Bolivia</div>
         <h1 class="hero-h1">POLLO<br>EL <span>SOLAR</span></h1>
-        <p class="hero-desc">Pollo broaster cruceño. Dorado por fuera,<br>jugoso por dentro. Desde hace más de 8 años.</p>
+        <p class="hero-desc">Pollo broaster cruceño. Dorado por fuera,<br>jugoso por dentro. Desde hace más de 43 años.</p>
         <div class="hero-btns">
             <a href="menu.php" class="btn-red">Ver Menú</a>
             <a href="sucursal.php" class="btn-outline">Nuestras Sucursales</a>
@@ -342,51 +339,6 @@ $popup = $stmt->fetch();
 </div><!-- /home-page -->
 
 <!-- ══════════════════════════════════════════════
-     SECCIÓN 1 — NUESTROS PRODUCTOS (items)
-══════════════════════════════════════════════ -->
-<section class="land-section cream">
-    <div class="land-center" style="margin-bottom:40px;">
-        <div class="land-sub">Lo que hacemos mejor</div>
-        <h2 class="land-titulo">Nuestros<br>productos</h2>
-    </div>
-    <div class="items-grid">
-        <div class="item-card"><img src="../items/CUARTO PECHO SOLAR.png" alt="Cuarto Pecho"><span>Cuarto Pecho</span></div>
-        <div class="item-card"><img src="../items/CUARTO PIERNA 2025.png" alt="Cuarto Pierna"><span>Cuarto Pierna</span></div>
-        <div class="item-card"><img src="../items/ALITAS SOLAR.png" alt="Alitas"><span>Alitas</span></div>
-        <div class="item-card"><img src="../items/HAMBURGUESA DE POLLO.png" alt="Hamburguesa"><span>Hamburguesa</span></div>
-        <div class="item-card"><img src="../items/PIPOCAS DE POLLO SOLAR.png" alt="Pipocas"><span>Pipocas de Pollo</span></div>
-        <div class="item-card"><img src="../items/CHICHARRON PREMIUM.png" alt="Chicharrón"><span>Chicharrón</span></div>
-        <div class="item-card"><img src="../items/TRIO PECHO SOLAR.png" alt="Trío Pecho"><span>Trío Pecho</span></div>
-        <div class="item-card"><img src="../items/ECO ALA SOLAR.png" alt="Eco Ala"><span>Eco Ala</span></div>
-        <div class="item-card"><img src="../items/PORCION DE PAPAS.png" alt="Papas"><span>Porción Papas</span></div>
-        <div class="item-card"><img src="../items/PORCION DE YUCA.png" alt="Yuca"><span>Porción Yuca</span></div>
-        <div class="item-card"><img src="../items/PIPOCAS DE POLLO XL  SOLAR.png" alt="Pipocas XL"><span>Pipocas XL</span></div>
-        <div class="item-card"><img src="../items/PEQUE ALITA SOLAR.png" alt="Peque Alita"><span>Peque Alita</span></div>
-    </div>
-    <div style="text-align:center; margin-top:40px;">
-        <a href="menu.php" class="btn-red">Ver menú completo</a>
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
-     SECCIÓN 2 — COMBOS DE LA SEMANA
-══════════════════════════════════════════════ -->
-<section class="land-section dark">
-    <div class="land-center" style="margin-bottom:40px;">
-        <div class="land-sub" style="color:rgba(255,255,255,0.5);">Ofertas especiales</div>
-        <h2 class="land-titulo" style="color:#ffcc00;">Combos de<br>la semana</h2>
-    </div>
-    <div class="combos-grid">
-        <div class="combo-card"><img src="../combos/COMBO LUNES.png" alt="Combo Lunes"></div>
-        <div class="combo-card"><img src="../combos/COMBO MARTES.png" alt="Combo Martes"></div>
-        <div class="combo-card"><img src="../combos/COMBO MIÉRCOLES.png" alt="Combo Miércoles"></div>
-        <div class="combo-card"><img src="../combos/COMBO JUEVES.png" alt="Combo Jueves"></div>
-        <div class="combo-card"><img src="../combos/COMBO DÚO.png" alt="Combo Dúo"></div>
-        <div class="combo-card"><img src="../combos/COMBO TRICAS.png" alt="Combo Tricas"></div>
-    </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
      SECCIÓN 3 — CARRUSEL FOTOS REALES
 ══════════════════════════════════════════════ -->
 <div class="promo-section">
@@ -402,20 +354,12 @@ $popup = $stmt->fetch();
 <section class="land-section red">
     <div class="stats-row">
         <div class="stat">
-            <div class="stat-num" data-target="8">0</div>
+            <div class="stat-num" data-target="14">0</div>
             <div class="stat-label">Sucursales</div>
         </div>
         <div class="stat">
-            <div class="stat-num" data-target="12">0</div>
+            <div class="stat-num" data-target="43">0</div>
             <div class="stat-label">Años de sabor</div>
-        </div>
-        <div class="stat">
-            <div class="stat-num" data-target="15000">0</div>
-            <div class="stat-label">Clientes felices</div>
-        </div>
-        <div class="stat">
-            <div class="stat-num" data-target="20">0</div>
-            <div class="stat-label">Recetas únicas</div>
         </div>
     </div>
 </section>
@@ -423,7 +367,7 @@ $popup = $stmt->fetch();
 <!-- ══════════════════════════════════════════════
      SECCIÓN 5 — SUCURSALES (scroll automático)
 ══════════════════════════════════════════════ -->
-<section class="land-section cream" style="padding:60px 0;">
+<section class="land-section" style="padding:60px 0; background:#fff;">
     <div class="land-center" style="margin-bottom:36px; padding:0 24px;">
         <div class="land-sub">Cerca de ti</div>
         <h2 class="land-titulo">Nuestras<br>sucursales</h2>

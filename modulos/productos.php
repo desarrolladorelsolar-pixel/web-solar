@@ -311,15 +311,50 @@ if (isset($_GET['edit'])) {
             </div>
             <div class="grid-form" style="background: #fff8e1; padding: 15px; border-radius: 8px; border: 1px solid #ffe082; margin-top: 10px;">
                 <div class="form-group">
-                    <label style="color: #856404;">🔥 Precio de Oferta (Opcional)</label>
-                    <input type="number" step="0.01" name="precio_oferta" value="<?php echo $p_edit['precio_oferta'] ?? ''; ?>" class="form-control" placeholder="Ej: 25.00" style="border-color: #ffe082;">
-                    <small style="color: #b08900; font-size: 10px;">Si se llena, este será el precio visible.</small>
+                    <label style="color: #856404;">Precio de Oferta (Opcional)</label>
+                    <input type="number" step="0.01" id="inp_precio_oferta" name="precio_oferta"
+                           value="<?php echo $p_edit['precio_oferta'] ?? ''; ?>"
+                           class="form-control" placeholder="Ej: 25.00"
+                           style="border-color: #ffe082;"
+                           oninput="calcularDescuento()">
+                    <small id="lbl_descuento" style="color: #c62828; font-size: 11px; font-weight: 700; display:none;"></small>
+                    <small style="color: #b08900; font-size: 10px; display:block; margin-top:2px;">Si se llena, este será el precio visible.</small>
                 </div>
                 <div class="form-group">
-                    <label style="color: #856404;">🏷️ Etiqueta de Campaña</label>
-                    <input type="text" name="etiqueta_oferta" value="<?php echo $p_edit['etiqueta_oferta'] ?? ''; ?>" class="form-control" placeholder="Ej: Oferta del día, -15%, Black Friday" style="border-color: #ffe082;">
+                    <label style="color: #856404;">Etiqueta de Campaña</label>
+                    <input type="text" id="inp_etiqueta" name="etiqueta_oferta"
+                           value="<?php echo $p_edit['etiqueta_oferta'] ?? ''; ?>"
+                           class="form-control" placeholder="Ej: Oferta del día, -15%, Black Friday"
+                           style="border-color: #ffe082;">
+                    <small style="color: #b08900; font-size: 10px;">Aparece como badge en la card del menú.</small>
                 </div>
             </div>
+            <script>
+            function calcularDescuento() {
+                const precioInput  = document.querySelector('input[name="precio"]');
+                const ofertaInput  = document.getElementById('inp_precio_oferta');
+                const etiquetaInput = document.getElementById('inp_etiqueta');
+                const lbl          = document.getElementById('lbl_descuento');
+
+                const precio = parseFloat(precioInput?.value);
+                const oferta = parseFloat(ofertaInput.value);
+
+                if (precio > 0 && oferta > 0 && oferta < precio) {
+                    const pct = Math.round(((precio - oferta) / precio) * 100);
+                    lbl.textContent = `▼ ${pct}% de descuento`;
+                    lbl.style.display = 'block';
+                    // Sugerir la etiqueta automáticamente solo si está vacía
+                    if (!etiquetaInput.value.trim()) {
+                        etiquetaInput.placeholder = `-${pct}%`;
+                    }
+                } else {
+                    lbl.style.display = 'none';
+                    etiquetaInput.placeholder = 'Ej: Oferta del día, -15%, Black Friday';
+                }
+            }
+            // Calcular al cargar si ya hay valores (modo edición)
+            document.addEventListener('DOMContentLoaded', calcularDescuento);
+            </script>
             <div class="form-group" style="margin-bottom:20px;">
                 <label>Descripción / Ingredientes (Opcional)</label>
                 <textarea name="descripcion" rows="3" class="form-control" placeholder="Describe brevemente el plato..."><?php echo $p_edit['descripcion'] ?? ''; ?></textarea>

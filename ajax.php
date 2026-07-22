@@ -29,7 +29,7 @@ if (!isset($pdo)) {
 
 // Desactivar automáticamente cupones vencidos antes de cualquier petición de generación
 if (isset($_POST['generar_cupon_gabriel']) || isset($_POST['generar_cupon_upsa']) || isset($_POST['generar_cupon_convenio'])) {
-    $pdo->exec("UPDATE cupones SET estado = 0 WHERE fecha_expiracion < NOW() AND estado = 1 AND usado = 0");
+    $pdo->exec("UPDATE cupones SET estado = 0 WHERE DATE(fecha_expiracion) < CURDATE() AND estado = 1 AND usado = 0");
 }
 
 // BUSCAR CUPÓN
@@ -210,8 +210,8 @@ if (isset($_POST['generar_cupon_gabriel'])) {
         // 3. Buscar cupón disponible
         $stmt = $pdo->prepare(
             "SELECT id, codigo FROM cupones
-             WHERE estado = 1 AND usado = 0 AND fecha_expiracion >= NOW()
-               AND id NOT IN (SELECT cupon_id FROM cupon_uso WHERE DATE(fecha_uso) = CURDATE())
+             WHERE estado = 1 AND usado = 0 AND DATE(fecha_expiracion) >= CURDATE()
+               AND id NOT IN (SELECT cupon_id FROM cupon_uso)
              ORDER BY id ASC LIMIT 1"
         );
         $stmt->execute();
@@ -313,8 +313,8 @@ if (isset($_POST['generar_cupon_upsa'])) {
         // 3. Buscar cupón disponible
         $stmt = $pdo->prepare(
             "SELECT id, codigo FROM cupones
-             WHERE estado = 1 AND usado = 0 AND fecha_expiracion >= NOW()
-               AND id NOT IN (SELECT cupon_id FROM cupon_uso WHERE DATE(fecha_uso) = CURDATE())
+             WHERE estado = 1 AND usado = 0 AND DATE(fecha_expiracion) >= CURDATE()
+               AND id NOT IN (SELECT cupon_id FROM cupon_uso)
              ORDER BY id ASC LIMIT 1"
         );
         $stmt->execute();
@@ -388,16 +388,15 @@ if (isset($_POST['generar_cupon_convenio'])) {
             exit;
         }
 
-        // 3. Buscar primer cupón disponible: activo, no usado, no mostrado hoy, vigente
+        // 3. Buscar primer cupón disponible: activo, no usado, no asignado, vigente
         $stmt = $pdo->prepare(
             "SELECT id, codigo
              FROM cupones
              WHERE estado = 1
                AND usado = 0
-               AND fecha_expiracion >= NOW()
+               AND DATE(fecha_expiracion) >= CURDATE()
                AND id NOT IN (
                    SELECT cupon_id FROM cupon_uso
-                   WHERE DATE(fecha_uso) = CURDATE()
                )
              ORDER BY id ASC
              LIMIT 1"
@@ -437,6 +436,65 @@ if (isset($_POST['generar_cupon_convenio'])) {
             'tipo'    => 'error',
             'message' => 'Error interno: ' . $e->getMessage()
         ]);
+        exit;
+    }
+}
+
+// ── CREAR CLIENTE RÁPIDO (desde modal de canje) ──────────────
+if (isset($_POST['btn_crear_cliente_rapido'])) {
+    header('Content-Type: application/json');
+    header('Cache-Control: no-cache, must-revalidate');
+
+    try {
+        $nombre   = trim($_POST['cliente_nombre_rapido'] ?? '');
+        $ci       = trim($_POST['cliente_ci_rapido']     ?? '');
+        $telefono = trim($_POST['cliente_telefono_rapido'] ?? '');
+        $email    = trim($_POST['cliente_email_rapido']    ?? '');
+        $direccion = trim($_POST['cliente_direccion_rapido'] ?? '');
+        $fecha_nac = !empty($_POST['cliente_fecha_nacimiento'])
+                     ? $_POST['cliente_fecha_nacimiento']
+                     : null;
+
+        if (empty($nombre) || empty($ci)) {
+            echo json_encode(['success' => false, 'message' => 'Nombre y CI son obligatorios.']);
+            exit;
+        }
+
+        // Verificar si ya existe
+        $stmt = $pdo->prepare("SELECT id FROM clientes WHERE documento = ?");
+        $stmt->execute([$ci]);
+        if ($stmt->fetch()) {
+            echo json_encode(['success' => false, 'message' => 'Ya existe un cliente con ese CI.']);
+            exit;
+        }
+
+        // Insertar
+        $pdo->prepare("INSERT INTO clientes (nombre, documento, telefono, email, direccion, fecha_nacimiento, created_at, estado)
+                        VALUES (?, ?, ?, ?, ?, ?, NOW(), 1)")
+            ->execute([$nombre, $ci, $telefono, $email, $direccion, $fecha_nac]);
+
+        $nuevo_id = $pdo->lastInsertId();
+
+        if (function_exists('registrarLog')) {
+            registrarLog($pdo, "CREAR_CLIENTE_RAPIDO",
+                "Cliente registrado desde canje: $nombre (CI: $ci) — ID: $nuevo_id");
+        }
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Cliente registrado exitosamente.',
+            'cliente' => [
+                'id'        => $nuevo_id,
+                'nombre'    => $nombre,
+                'documento' => $ci,
+                'telefono'  => $telefono,
+                'email'     => $email,
+            ]
+        ]);
+        exit;
+
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => 'Error interno: ' . $e->getMessage()]);
         exit;
     }
 }
